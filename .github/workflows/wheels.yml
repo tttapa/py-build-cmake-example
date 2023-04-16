@@ -10,10 +10,10 @@ env:
 jobs:
   # First we build the wheels natively (build system == host system).
   # This allows us to import the compiled modules, and automatically generate
-  # stub files for it.
+  # stub files for them.
   # Those stub files can then later be included in the cross-compiled packages
   # as well (because we can't generate them while cross-compiling).
-  # By building the native wheels first, we can also start testing while the
+  # By building the native wheels first, we can already start testing while the
   # cross-compiled versions are being built.
   native-build-linux:
     name: Build wheels for ${{ matrix.triple }} - ${{ matrix.python-version }}
