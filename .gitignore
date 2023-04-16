@@ -1,0 +1,17 @@
+# Local files
+CMakeUserPresets.json
+py-build-cmake.local.toml
+py-build-cmake.cross.toml
+
+# Temporary build and cache folders
+build
+.*cache
+__pycache__
+
+# Virtual environments
+.venv
+
+# Python distribution and building
+/dist
+/wheelhouse
+/staging

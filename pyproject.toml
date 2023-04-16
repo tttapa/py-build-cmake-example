@@ -1,0 +1,85 @@
+[project]
+name = "py-build-cmake-example" # Name on PyPI
+readme = "README.md"
+requires-python = ">=3.7"
+license = { "file" = "LICENSE" }
+authors = [{ "name" = "Pieter P", "email" = "pieter.p.dev@outlook.com" }]
+keywords = ["addition", "subtraction", "pybind11"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+]
+urls = { "Documentation" = "https://tttapa.github.io/" }
+dependencies = []
+dynamic = ["version", "description"]
+
+[project.optional-dependencies]
+test = ["pytest~=7.2.0"]
+
+[project.scripts]
+add = "py_build_cmake_example.add:main"
+
+[build-system]
+requires = ["py-build-cmake~=0.1.7", "pybind11", "pybind11-stubgen"]
+build-backend = "py_build_cmake.build"
+
+[tool.py-build-cmake.module]
+name = "py_build_cmake_example" # Import name
+directory = "python-src"
+
+[tool.py-build-cmake.sdist]
+include = ["CMakeLists.txt", "cmake/*.cmake", "src/*.cpp", "src/*.hpp"]
+exclude = []
+
+[tool.py-build-cmake.cmake]
+minimum_version = "3.18"
+build_type = "Release"
+source_path = "." # Containing CMakeLists.txt
+args = ["-Wdev"]
+build_args = ["-j"]
+build_tool_args = []
+install_args = ["--verbose"]
+install_components = ["python_modules", "python_stubs"]
+env = {}
+
+[tool.py-build-cmake.linux.cmake] # Linux-specific options
+generator = "Ninja Multi-Config"
+config = ["Debug", "Release"]
+options = { "CMAKE_DEBUG_POSTFIX" = "_d" }
+
+[tool.py-build-cmake.mac.cmake] # macOS-specific options
+generator = "Ninja Multi-Config"
+config = ["Debug", "Release"]
+options = { "CMAKE_DEBUG_POSTFIX" = "_d" }
+
+[tool.py-build-cmake.windows.cmake] # Windows-specific options
+config = ["RelWithDebInfo", "Release"]
+[tool.py-build-cmake.windows.cmake.options]
+CMAKE_CXX_FLAGS_RELWITHDEBINFO = "/Zi /Ob0 /Od /RTC1"
+CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO = "/INCREMENTAL:NO /OPT:REF /DEBUG:FULL"
+CMAKE_RELWITHDEBINFO_POSTFIX = "_d"
+
+[tool.py-build-cmake.stubgen]
+args = ["-v"]
+
+[tool.cibuildwheel]
+archs = ["auto64"]
+skip = "pp37-*"
+build-frontend = "build"
+environment = { "PY_BUILD_CMAKE_VERBOSE" = "1" }
+
+[tool.cibuildwheel.macos]
+archs = ["universal2"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["test"]
