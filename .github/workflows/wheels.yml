@@ -149,10 +149,10 @@ jobs:
           name: wheels-src
           path: ./dist/*.tar.gz
 
-  # We won't cross-compile for Windows and macOS. For macOS, we build universal
-  # wheels that work on both Intel and M1/M2 macs.
-  # Since we're not cross-compiling, we can just use cibuildwheel with default
-  # settings.
+  # Build for Windows and macOS using cibuildwheel.
+  # Since we're not specifying any cross-compilation settings, py-build-cmake
+  # will use its default cross-compilation settings for Windows on ARM64.
+  # For macOS, we build universal wheels that work on both Intel and M1/M2 macs.
   build-win-mac:
     name: Build wheels for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -164,7 +164,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.12.1
+        uses: pypa/cibuildwheel@v2.14.1
         with:
           output-dir: dist
 
