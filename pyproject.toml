@@ -29,7 +29,7 @@ test = ["pytest~=7.2.0"]
 add = "py_build_cmake_example.add:main"
 
 [build-system]
-requires = ["py-build-cmake~=0.1.7", "pybind11", "pybind11-stubgen"]
+requires = ["py-build-cmake~=0.1.9a1", "pybind11", "pybind11-stubgen"]
 build-backend = "py_build_cmake.build"
 
 [tool.py-build-cmake.module]
@@ -81,6 +81,9 @@ test-command = "pytest {project}"
 
 [tool.cibuildwheel.macos]
 archs = ["universal2"]
+
+[tool.cibuildwheel.windows]
+archs = ["AMD64", "x86", "ARM64"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
