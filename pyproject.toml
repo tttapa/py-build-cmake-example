@@ -77,7 +77,7 @@ skip = "pp37-*"
 build-frontend = "build"
 environment = { "PY_BUILD_CMAKE_VERBOSE" = "1" }
 test-requires = "pytest"
-test-command = "pytest {project}"
+test-command = "pytest {project}/test"
 
 [tool.cibuildwheel.macos]
 archs = ["universal2"]
