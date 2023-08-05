@@ -5,7 +5,9 @@ mark_as_advanced(USE_GLOBAL_PYBIND11)
 # query the CMake config location, and finally imports pybind11 using
 # find_package(pybind11 REQUIRED CONFIG CMAKE_FIND_ROOT_PATH_BOTH).
 function(find_pybind11_python_first)
+    set(CMAKE_FIND_DEBUG_MODE On)
     find_package(Python3 MODULE REQUIRED COMPONENTS Interpreter Development.Module)
+    set(CMAKE_FIND_DEBUG_MODE Off)
     if (NOT USE_GLOBAL_PYBIND11)
         # Query Python to see if it knows where the headers are
         if (NOT pybind11_ROOT OR NOT EXISTS ${pybind11_ROOT})
