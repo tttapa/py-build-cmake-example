@@ -29,7 +29,7 @@ test = ["pytest~=7.2.0"]
 add = "py_build_cmake_example.add:main"
 
 [build-system]
-requires = ["py-build-cmake~=0.1.9a1", "pybind11", "pybind11-stubgen"]
+requires = ["py-build-cmake~=0.2.0a2", "pybind11", "pybind11-stubgen"]
 build-backend = "py_build_cmake.build"
 
 [tool.py-build-cmake.module]
@@ -50,6 +50,7 @@ build_tool_args = []
 install_args = ["--verbose"]
 install_components = ["python_modules", "python_stubs"]
 env = {}
+options = { "CMAKE_FIND_DEBUG_MODE" = "On" }
 
 [tool.py-build-cmake.linux.cmake] # Linux-specific options
 generator = "Ninja Multi-Config"
@@ -73,14 +74,14 @@ args = ["-v"]
 
 [tool.cibuildwheel]
 archs = ["auto64"]
-skip = "pp37-*"
+build = "cp38-*"
 build-frontend = "build"
 environment = { "PY_BUILD_CMAKE_VERBOSE" = "1" }
 test-requires = "pytest"
 test-command = "pytest {project}/test"
 
 [tool.cibuildwheel.macos]
-archs = ["universal2", "x86_64"]
+archs = ["universal2", "x86_64", "arm64"]
 
 [tool.cibuildwheel.windows]
 archs = ["AMD64", "x86", "ARM64"]
