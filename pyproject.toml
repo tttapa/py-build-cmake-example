@@ -76,6 +76,7 @@ args = ["-v"]
 archs = ["auto64"]
 build = "cp38-*"
 build-frontend = "pip"
+build-verbosity = 1
 environment = { "PY_BUILD_CMAKE_VERBOSE" = "1" }
 test-requires = "pytest"
 test-command = "pytest {project}/test"
