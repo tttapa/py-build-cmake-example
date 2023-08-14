@@ -75,7 +75,7 @@ args = ["-v"]
 [tool.cibuildwheel]
 archs = ["auto64"]
 build = "cp38-*"
-build-frontend = "build"
+build-frontend = "pip"
 environment = { "PY_BUILD_CMAKE_VERBOSE" = "1" }
 test-requires = "pytest"
 test-command = "pytest {project}/test"
