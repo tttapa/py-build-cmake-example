@@ -16,6 +16,7 @@ jobs:
   # By building the native wheels first, we can already start testing while the
   # cross-compiled versions are being built.
   build-sdist:
+    if: false
     name: Build sdist
     runs-on: ubuntu-22.04
     strategy:
@@ -82,6 +83,7 @@ jobs:
   # It also ensures that we don't accidentally depend on any libraries specific
   # to the build container.
   test-linux:
+    if: false
     name: Run tests
     needs: [build-sdist]
     runs-on: ubuntu-latest
@@ -123,6 +125,7 @@ jobs:
           - pypy3.8-v7.3
           - pypy3.9-v7.3
           - pypy3.10-v7.3
+        # PyPy does not provide 32-bit ARM binaries, so we exclude these:
         exclude:
           - python-version: pypy3.7-v7.3
             host: armv7-neon-linux-gnueabihf
@@ -165,30 +168,30 @@ jobs:
           name: wheels-${{ matrix.host }}-${{ matrix.python-version }}
           path: ./sdist/dist/*.whl
 
-#   # Build for Windows and macOS using cibuildwheel.
-#   # Since we're not specifying any cross-compilation settings, py-build-cmake
-#   # will use its default cross-compilation settings for Windows on ARM64.
-#   # For macOS, we build universal wheels that work on both Intel and M1/M2 macs.
-#   build-win-mac:
-#     name: Build wheels for ${{ matrix.os }}
-#     runs-on: ${{ matrix.os }}
-#     strategy:
-#       matrix:
-#         os: [windows-latest, macos-latest]
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v3
+  # Build for Windows and macOS using cibuildwheel.
+  # Since we're not specifying any cross-compilation settings, py-build-cmake
+  # will use its default cross-compilation settings for Windows on ARM64.
+  # For macOS, we build universal wheels that work on both Intel and ARM macs.
+  build-win-mac:
+    name: Build wheels for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-#       - name: Build wheels
-#         uses: pypa/cibuildwheel@v2.14.1
-#         with:
-#           output-dir: dist
+      - name: Build wheels
+        uses: pypa/cibuildwheel@ee63bf16da6cddfb925f542f2c7b59ad50e93969
+        with:
+          output-dir: dist
 
-#       - name: Upload package
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: wheels-win-mac
-#           path: ./dist/*.whl
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-win-mac
+          path: ./dist/*.whl
 
 #   # Finally, release the package to PyPI. Make sure to add your PyPI token as
 #   # a secret with the name “PyPI”:

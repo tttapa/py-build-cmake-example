@@ -64,7 +64,13 @@ test-requires = "pytest"
 test-command = "pytest {project}/test"
 
 [tool.cibuildwheel.macos]
-archs = ["universal2"]
+archs = ["arm64", "x86_64", "universal2"]
+before-build = [
+    "pip install cmake 'conan>=2,<3' ninja",
+    "conan profile detect -f",
+    "rm -rf build",
+    "python scripts/ci/pre-build-macos.py",
+]
 
 [tool.cibuildwheel.windows]
 archs = ["AMD64", "x86", "ARM64"]
