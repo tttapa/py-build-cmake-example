@@ -13,5 +13,6 @@ __pycache__
 
 # Python distribution and building
 /dist
+/sdist
 /wheelhouse
 /staging

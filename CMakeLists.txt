@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 project(py-build-cmake-example VERSION 0.0.1)
-set(PY_VERSION_SUFFIX "")
+set(PY_VERSION_SUFFIX "")  # e.g. b3.dev1, see PEP 440
 set(PY_FULL_VERSION ${PROJECT_VERSION}${PY_VERSION_SUFFIX})
 
 # Make sure that the Python and CMake versions match
@@ -30,25 +30,35 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 # Install the Python module
+set(PYTHON_MODULE_DESTINATION ${PY_BUILD_CMAKE_MODULE_NAME})
 install(TARGETS _add_module
         EXCLUDE_FROM_ALL
         COMPONENT python_modules
-        DESTINATION ${PY_BUILD_CMAKE_MODULE_NAME})
+        DESTINATION ${PYTHON_MODULE_DESTINATION})
 # Install the debug file for the Python module (Windows only)
 if (WIN32)
     install(FILES $<TARGET_PDB_FILE:_add_module>
             EXCLUDE_FROM_ALL
             COMPONENT python_modules
-            DESTINATION ${PY_BUILD_CMAKE_MODULE_NAME}
+            DESTINATION ${PYTHON_MODULE_DESTINATION}
             OPTIONAL)
 endif()
 
 # Generate stubs for the Python module
-option(WITHOUT_PY_STUBS
-       "Do not generate Python stub files (.pyi) for the Python module."
-       ${CMAKE_CROSSCOMPILING})
-if (NOT WITHOUT_PY_STUBS)
+set(PY_STUBS_INSTALLDIR ""
+    CACHE PATH "Installation directory for Python stubs (relative to Python package)")
+set(WITH_PY_STUBS_DEFAULT On)
+if (CMAKE_CROSSCOMPILING)
+    set(WITH_PY_STUBS_DEFAULT Off)
+endif()
+option(WITH_PY_STUBS
+    "Generate Python stub files (.pyi) for the Python module."
+    ${WITH_PY_STUBS_DEFAULT})
+if (WITH_PY_STUBS)
     include(cmake/Pybind11Stubgen.cmake)
-    pybind11_stubgen(_add_module)
-    pybind11_stubgen_install(_add_module ${PY_BUILD_CMAKE_MODULE_NAME})
+    pybind11_stubgen(_add_module
+        PACKAGE ${PYTHON_MODULE_DESTINATION}
+        DESTINATION ${PY_STUBS_INSTALLDIR}
+        COMPONENT python_stubs
+    )
 endif()
