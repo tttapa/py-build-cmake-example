@@ -74,6 +74,12 @@ before-build = [
 
 [tool.cibuildwheel.windows]
 archs = ["AMD64", "x86", "ARM64"]
+before-build = [
+    "python -m pip install cmake \"conan>=2,<3\" ninja",
+    "conan profile detect -f",
+    "(if exist build (rmdir /s /q build))",
+    "python scripts\\ci\\pre-build-windows.py",
+]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
