@@ -31,7 +31,7 @@ test = ["pytest>=7.2.0,<9"]
 add = "py_build_cmake_example.add:main"
 
 [build-system]
-requires = ["py-build-cmake~=0.3.0a2", "pybind11-stubgen~=2.5.1"]
+requires = ["py-build-cmake~=0.3.0a3", "pybind11-stubgen~=2.5.1"]
 build-backend = "py_build_cmake.build"
 
 [tool.py-build-cmake.module]
