@@ -5,7 +5,6 @@ on: [push, pull_request]
 env:
   PACKAGE_VERSION: '0.0.1'
   PACKAGE_NAME: py-build-cmake-example
-  TWINE_REPOSITORY: testpypi # or pypi
 
 jobs:
   # First we build the wheels natively (build system == host system).
@@ -54,7 +53,7 @@ jobs:
       - name: Upload Wheel
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-native
+          name: native-wheels
           path: dist/*.whl
           retention-days: 1
           
@@ -82,7 +81,6 @@ jobs:
   # It also ensures that we don't accidentally depend on any libraries specific
   # to the build container.
   test-linux:
-    if: false
     name: Run tests
     needs: [build-sdist]
     runs-on: ubuntu-latest
@@ -94,7 +92,7 @@ jobs:
       - name: Download wheels
         uses: actions/download-artifact@v4
         with:
-          name: wheels-native
+          name: native-wheels
           path: dist
 
       - name: Install
@@ -171,7 +169,7 @@ jobs:
   # Since we're not specifying any cross-compilation settings, py-build-cmake
   # will use its default cross-compilation settings for Windows on ARM64.
   # For macOS, we build universal wheels that work on both Intel and ARM macs.
-  build-win-mac:
+  build-macos-windows:
     name: Build wheels for ${{ matrix.os }}
     needs: [build-sdist]
     runs-on: ${{ matrix.os }}
@@ -200,7 +198,6 @@ jobs:
           package-dir: sdist
           output-dir: dist
         env:
-          CIBW_BUILD: 'cp313-* pp310-*'
           CIBW_ENABLE: 'pypy'
 
       - name: Upload package
@@ -209,52 +206,55 @@ jobs:
           name: wheels-${{ matrix.os }}
           path: ./dist/*.whl
 
-#   # Finally, release the package to PyPI. Make sure to add your PyPI token as
-#   # a secret with the name “PyPI”:
-#   # https://docs.github.com/en/actions/security-guides/encrypted-secrets
-#   # This step will fail if the package version does not match the Git tag of the
-#   # release.
-#   release:
-#     if: ${{ github.event.action == 'released' || github.event.action == 'prereleased' }}
-#     needs: [test-linux, cross-build-linux, source-build-linux, build-win-mac]
-#     runs-on: ubuntu-latest
-#     container: python:3.11-bullseye
-#     steps:
-#       - name: Download native wheels
-#         uses: actions/download-artifact@v4
-#         with:
-#           name: wheels-native
-#           path: dist
-#       - name: Download cross wheels
-#         uses: actions/download-artifact@v4
-#         with:
-#           name: wheels-cross
-#           path: dist
-#       - name: Download Windows and macOS wheels
-#         uses: actions/download-artifact@v4
-#         with:
-#           name: wheels-win-mac
-#           path: dist
-#       - name: Download sdist
-#         uses: actions/download-artifact@v4
-#         with:
-#           name: wheels-src
-#           path: dist
+  # This step checks the package version before release (to make sure that the
+  # package version actually matches the version of the GitHub release tag),
+  # and uses Twine to check the metadata of the packages.
+  check-release:
+    if: ${{ github.event.action == 'released' || github.event.action == 'prereleased' }}
+    needs: [build-sdist, test-linux, build-macos-windows]
+    runs-on: ubuntu-latest
+    container: python:3.12-bullseye
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+      - name: Install package
+        run: python -m pip install --no-deps --no-index --find-links=dist ${PACKAGE_NAME}==${PACKAGE_VERSION}
+      - name: Check package version
+        run: |
+          [ "${{ github.event.release.tag_name }}" == $(python -c 'from importlib.metadata import version as v; print(v("${{ env.PACKAGE_NAME }}"))') ]
+        shell: bash
+      - name: Twine check
+        run: |
+          python -m pip install twine
+          twine check dist/*
 
-#       - name: Install Twine
-#         run: python3 -m pip install -U pip twine
-#       - name: Install package
-#         run: python3 -m pip install --find-links=dist ${PACKAGE_NAME}==${PACKAGE_VERSION}
-#       - name: Check package version
-#         shell: bash
-#         run: >
-#           [ "${{ github.event.release.tag_name }}" ==
-#           "$(python3 -c 'import ${{ env.MODULE_NAME }} as m; print(m.__version__)')" ]
-
-#       - name: Upload to PyPI
-#         run: >
-#           python3 -m twine upload -r ${{ env.TWINE_REPOSITORY }}
-#           dist/*.whl dist/*.tar.gz
-#         env:
-#           TWINE_USERNAME: __token__
-#           TWINE_PASSWORD: ${{ secrets.PyPI }}
+  # Here we download the sdist and the built Wheel files, and upload them to
+  # TestPyPI. You should follow the trusted publishing instructions in the
+  # https://github.com/pypa/gh-action-pypi-publish README carefully!
+  release:
+    needs: [check-release]
+    if: ${{ github.event.action == 'released' || github.event.action == 'prereleased' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/py-build-cmake-example
+    permissions:
+      id-token: write  # mandatory for trusted publishing
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@15c56dba361d8335944d31a2ecd17d700fc7bcbc
+        with:
+          repository-url: https://test.pypi.org/legacy/
