@@ -68,8 +68,8 @@ archs = ["arm64", "x86_64", "universal2"]
 before-build = [
     "pip install cmake 'conan>=2,<3' ninja",
     "conan profile detect -f",
-    "rm -rf build",
-    "python scripts/ci/pre-build-macos.py",
+    "rm -rf {package}/build",
+    "python {package}/scripts/ci/pre-build-macos.py",
 ]
 
 [tool.cibuildwheel.windows]
@@ -77,8 +77,8 @@ archs = ["AMD64", "x86", "ARM64"]
 before-build = [
     "python -m pip install cmake \"conan>=2,<3\" ninja",
     "conan profile detect -f",
-    "(if exist build (rmdir /s /q build))",
-    "python scripts\\ci\\pre-build-windows.py",
+    "(if exist {package}\\build (rmdir /s /q {package}\\build))",
+    "python {package}\\scripts\\ci\\pre-build-windows.py",
 ]
 
 [tool.pytest.ini_options]

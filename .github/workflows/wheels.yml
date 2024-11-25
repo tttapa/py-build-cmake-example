@@ -16,7 +16,6 @@ jobs:
   # By building the native wheels first, we can already start testing while the
   # cross-compiled versions are being built.
   build-sdist:
-    if: false
     name: Build sdist
     runs-on: ubuntu-22.04
     strategy:
@@ -174,6 +173,7 @@ jobs:
   # For macOS, we build universal wheels that work on both Intel and ARM macs.
   build-win-mac:
     name: Build wheels for ${{ matrix.os }}
+    needs: [build-sdist]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -182,15 +182,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Download sdist
+        uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+      - name: Extract sdist
+        shell: bash
+        run: |
+          mkdir sdist
+          tar xf dist/*.tar.gz -C sdist --strip-components 1
+          cp -a scripts sdist
+
       - name: Build wheels
         uses: pypa/cibuildwheel@ee63bf16da6cddfb925f542f2c7b59ad50e93969
         with:
+          package-dir: sdist
           output-dir: dist
+        env:
+          CIBW_BUILD: 'cp313-* pp310-*'
+          CIBW_ENABLE: 'pypy'
 
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-win-mac
+          name: wheels-${{ matrix.os }}
           path: ./dist/*.whl
 
 #   # Finally, release the package to PyPI. Make sure to add your PyPI token as
