@@ -3,7 +3,7 @@
     "tasks": [
         {
             "label": "Install package (development)",
-            "command": "${command:python.interpreterPath} -m pip install -e . --no-build-isolation",
+            "command": "${command:python.interpreterPath} -m pip install -e . --no-build-isolation -C override=cmake.build_presets=conan-debug -C override=cmake.build_type=Debug",
             "type": "shell",
             "args": [],
             "problemMatcher": [],

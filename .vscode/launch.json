@@ -14,9 +14,6 @@
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [
-                {"name": "PY_BUILD_CMAKE_EXAMPLE_PYTHON_DEBUG", "value": "1"}
-            ],
             "externalConsole": false,
             "MIMode": "gdb",
             "setupCommands": [
@@ -43,9 +40,6 @@
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [
-                {"name": "PY_BUILD_CMAKE_EXAMPLE_PYTHON_DEBUG", "value": "1"}
-            ],
             "console": "integratedTerminal",
             "preLaunchTask": "Install package (development)",
         },
