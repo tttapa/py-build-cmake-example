@@ -1,6 +1,9 @@
 name: Build, test and release Python wheels
 
-on: [push, pull_request]
+on:
+  workflow_dispatch:
+  release:
+    types: ['released', 'prereleased']
 
 env:
   PACKAGE_VERSION: '0.0.1'
@@ -234,7 +237,8 @@ jobs:
 
   # Here we download the sdist and the built Wheel files, and upload them to
   # TestPyPI. You should follow the trusted publishing instructions in the
-  # https://github.com/pypa/gh-action-pypi-publish README carefully!
+  # https://github.com/pypa/gh-action-pypi-publish README and on
+  # https://docs.pypi.org/trusted-publishers carefully!
   release:
     needs: [check-release]
     if: ${{ github.event.action == 'released' || github.event.action == 'prereleased' }}
