@@ -11,9 +11,16 @@ if (DEFINED PY_BUILD_CMAKE_PACKAGE_VERSION)
     endif()
 endif()
 
-# Find the pybind11 package
-include(cmake/QueryPythonForPybind11.cmake)
-find_pybind11_python_first()
+# Find the Python development files
+if (CMAKE_CROSSCOMPILING AND NOT (APPLE AND "$ENV{CIBUILDWHEEL}" STREQUAL "1"))
+    find_package(Python3 REQUIRED COMPONENTS Development.Module)
+else()
+    find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
+endif()
+
+# Find the pybind11 library
+set(PYBIND11_USE_CROSSCOMPILING On) # https://github.com/pybind/pybind11/pull/5083
+find_package(pybind11 REQUIRED)
 
 # Compile the example Python module
 pybind11_add_module(_add_module MODULE "src/add_module.cpp")
