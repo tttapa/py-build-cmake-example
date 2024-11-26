@@ -106,7 +106,7 @@ py -3 examples/add_example.py
 **Linux/macOS**
 ```sh
 # Install py-build-cmake
-python3 -m pip install py-build-cmake~=0.3.0a3
+python3 -m pip install py-build-cmake~=0.3.0a3 pybind11-stubgen~=2.5.1
 # Install the debug version of the C++ dependencies
 conan install . --build=missing -c tools.cmake.cmaketoolchain:generator="Ninja Multi-Config" -s build_type=Debug
 ```
@@ -119,12 +119,14 @@ session will start.
 **Windows**
 ```sh
 # Install py-build-cmake
-py -3 -m pip install py-build-cmake~=0.3.0a3
+py -3 -m pip install py-build-cmake~=0.3.0a3 pybind11-stubgen~=2.5.1
 # Install the debug version of the C++ dependencies
 conan install . --build=missing -s build_type=Debug
 ```
 
-With the project open in VSCode, go to the “Debug” panel and start debugging
-using the **“(Windows) Launch Python”** configuration. The Python package will
-be built in debug mode automatically (see `.vscode/tasks.json`), and a debug
-session will start.
+With the project open in VSCode, select a debug version of Python
+(<kbd>Ctrl+Shift+P</kbd>, “Python: Select Interpreter”, `python_d.exe`), then
+go to the “Debug” panel and start debugging using the
+**“(Windows) Launch Python”** configuration. The Python package will be built
+in debug mode automatically (see `.vscode/tasks.json`), and a debug session
+will start.

@@ -30,7 +30,7 @@ function(pybind11_stubgen target)
     endif()
 
     # Run pybind11-stubgen in the installation prefix
-    set(STUBGEN_MOD $<TARGET_FILE_BASE_NAME:${target}>)
+    set(STUBGEN_MOD ${target})
     set(STUBGEN_DIR \"\${CMAKE_INSTALL_PREFIX}/${STUBGEN_PACKAGE}\")
     set(STUBGEN_CMD "\"${Python3_EXECUTABLE}\" -m pybind11_stubgen
         --exit-code -o \"${STUBGEN_DESTINATION}\" \"${STUBGEN_MOD}\"")

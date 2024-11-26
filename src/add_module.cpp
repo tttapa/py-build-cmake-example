@@ -5,7 +5,7 @@
 
 #include <cstdint>
 #include <pybind11/pybind11.h>
-using pybind11::operator""_a;
+using namespace pybind11::literals;
 
 int32_t add(int32_t a, int32_t b) {
     return a + b;
