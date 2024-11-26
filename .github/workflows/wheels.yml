@@ -6,7 +6,7 @@ on:
     types: ['released', 'prereleased']
 
 env:
-  PACKAGE_VERSION: '0.3.0a3'
+  PACKAGE_VERSION: '0.3.0'
   PACKAGE_NAME: py-build-cmake-example
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
       - name: Install Python dependencies
         run: >
           pip install -U
-          pip build conan ninja py-build-cmake~=0.3.0a3 pybind11-stubgen~=2.5.1
+          pip build conan ninja py-build-cmake~=0.3.0 pybind11-stubgen~=2.5.1
 
         # Cache the Conan cache folder to speed up installation of the dependencies.
       - name: Cache Conan dependencies
