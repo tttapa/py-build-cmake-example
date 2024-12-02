@@ -46,11 +46,11 @@ runs:
     - name: Download toolchains
       shell: bash
       run: |
-        url=https://github.com/tttapa/toolchains/releases/download/1.0.0
+        url=https://github.com/tttapa/toolchains/releases/download/1.0.1
         file=x-tools-${{ inputs.host }}-gcc14.tar.xz
         wget "$url/$file" -O- | ${{ inputs.sudo }} tar xJ -C /opt
         ${{ inputs.sudo }} chmod u+w /opt/x-tools/${{ inputs.host }}
-        url=https://github.com/tttapa/python-dev/releases/download/0.0.6
+        url=https://github.com/tttapa/python-dev/releases/download/0.0.7
         file=python-dev-${{ inputs.host }}.tar.xz
         wget "$url/$file" -O- | ${{ inputs.sudo }} tar xJ -C /opt
     # Install runtime libraries
