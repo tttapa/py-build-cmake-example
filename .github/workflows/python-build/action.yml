@@ -89,7 +89,7 @@ runs:
         cat <<- EOF > conan.profile
         include(/opt/x-tools/${{ inputs.host }}.${pyver%%[0-9]*}.profile.conan)
         [conf]
-        tools.cmake.cmaketoolchain:generator="Ninja Multi-Config"
+        tools.cmake.cmaketoolchain:generator=Ninja Multi-Config
         EOF
 
     # We now call conan install to install the dependencies for our project, so
