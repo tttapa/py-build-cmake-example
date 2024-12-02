@@ -106,7 +106,7 @@ py -3 examples/add_example.py
 **Linux/macOS**
 ```sh
 # Install py-build-cmake
-python3 -m pip install py-build-cmake~=0.3.0 pybind11-stubgen~=2.5.1
+python3 -m pip install py-build-cmake~=0.3.1 pybind11-stubgen~=2.5.1
 # Install the debug version of the C++ dependencies
 conan install . --build=missing -c tools.cmake.cmaketoolchain:generator="Ninja Multi-Config" -s build_type=Debug
 ```
@@ -119,7 +119,7 @@ session will start.
 **Windows**
 ```sh
 # Install py-build-cmake
-py -3 -m pip install py-build-cmake~=0.3.0 pybind11-stubgen~=2.5.1
+py -3 -m pip install py-build-cmake~=0.3.1 pybind11-stubgen~=2.5.1
 # Install the debug version of the C++ dependencies
 conan install . --build=missing -s build_type=Debug
 ```
