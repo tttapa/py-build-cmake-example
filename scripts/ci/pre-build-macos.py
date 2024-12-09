@@ -18,7 +18,7 @@ print(flush=True)
 
 if not archs:
     archs = (platform.machine(),)
-deployment_target = os.getenv("MACOSX_DEPLOYMENT_TARGET", "10.15")
+deployment_target = os.getenv("MACOSX_DEPLOYMENT_TARGET", "11.0")
 can_run = platform.machine() in archs
 conan_arch = {
     ("x86_64",): "x86_64",
@@ -50,15 +50,15 @@ arch={conan_arch}
 os.version={deployment_target}
 build_type=Release
 [conf]
-tools.build.cross_building:can_run={can_run}
-tools.cmake.cmaketoolchain:generator=Ninja Multi-Config
 tools.build:skip_test=True
+tools.cmake.cmaketoolchain:generator=Ninja Multi-Config
 tools.build:cflags+={cpu_flags}
 tools.build:cxxflags+={cpu_flags}
-tools.cmake.cmaketoolchain:extra_variables={{{cmake_opts}}}
+tools.cmake.cmaketoolchain:extra_variables*={{{cmake_opts}}}
 """
 cross_profile = native_profile
 cross_profile += f"""\
+tools.build.cross_building:can_run={can_run}
 tools.cmake.cmaketoolchain:system_name="Darwin"
 """
 
@@ -68,7 +68,4 @@ Path("cibw.profile").write_text(profile)
 print(profile)
 
 opts = dict(shell=True, check=True)
-run(
-    "conan install . -pr:h ./cibw.profile --build=missing -s build_type=Release",
-    **opts,
-)
+run("conan install . -pr:h ./cibw.profile --build=missing", **opts)

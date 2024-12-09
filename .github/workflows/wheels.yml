@@ -20,64 +20,35 @@ jobs:
   build-sdist:
     name: Build sdist
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        python-version: ['3.13']
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Python
-        uses: actions/setup-python@v5
+      - name: Set up Conan
+        uses: ./.github/workflows/setup-conan
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install Python dependencies
-        run: >
-          pip install -U
-          pip build conan ninja py-build-cmake~=0.3.1 pybind11-stubgen~=2.5.1
-
-        # Cache the Conan cache folder to speed up installation of the dependencies.
-      - name: Cache Conan dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.conan2/p
-          # Key is unique, to force updating the cache, but we still want the
-          # cache to be restored, so we use restore-keys with a matching prefix.
-          key: ${{ runner.os }}-build-sdist-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-build-sdist-
-      - name: Install Conan dependencies
-        run: |
-          conan profile detect -f
-          conan install . --build=missing \
-            -c tools.cmake.cmaketoolchain:generator="Ninja Multi-Config"
+          python-version: '3.12'
+          cache-key: build-sdist
 
       - name: Build Wheel package
-        run: python3 -m build -w
+        run: ./scripts/ci/build-linux-native.sh . dist python-src
       - name: Upload Wheel
         uses: actions/upload-artifact@v4
         with:
           name: native-wheels
           path: dist/*.whl
           retention-days: 1
-          
-      - name: Install stubs
-        run: |
-          # We install the Python modules and stubs in the source directory
-          py-build-cmake configure
-          py-build-cmake install --component python_modules -- --prefix python-src
-          py-build-cmake install --component python_stubs -- --prefix python-src
-          # Then we remove the binary Python modules (sdist is source only)
-          while IFS= read -r f || [ -n "$f" ]; do rm -f "$f"
-          done < build/install_manifest_python_modules.txt
+
       - name: Create sdist
         run: python3 -m build -s
-
       - name: Upload sdist
         uses: actions/upload-artifact@v4
         with:
           name: sdist
           path: dist/*.tar.gz
           retention-days: 1
+
+      - run: conan cache clean
 
   # Testing is done in the official Python Docker container: https://hub.docker.com/_/python/
   # This should match more closely to the environment that users might use.
@@ -87,7 +58,7 @@ jobs:
     name: Run tests
     needs: [build-sdist]
     runs-on: ubuntu-latest
-    container: python:3.13-bookworm
+    container: python:3.12-bookworm
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -105,47 +76,23 @@ jobs:
         run: pytest -rP
 
   # After the native build, we have the stub files, and we can start cross-
-  # compiling for other architectures.
-  cross-build-linux:
-    name: Cross-build wheels for ${{ matrix.host }} - ${{ matrix.python-version }}
+  # compiling for all architectures.
+  build-linux:
+    name: Build wheels (${{ matrix.host }})
     needs: [build-sdist]
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        host: [x86_64-bionic-linux-gnu, aarch64-rpi3-linux-gnu, armv7-neon-linux-gnueabihf, armv6-rpi-linux-gnueabihf]
-        python-version:
-          - python3.7
-          - python3.8
-          - python3.9
-          - python3.10
-          - python3.11
-          - python3.12
-          - python3.13
-          - pypy3.7-v7.3
-          - pypy3.8-v7.3
-          - pypy3.9-v7.3
-          - pypy3.10-v7.3
-        # PyPy does not provide 32-bit ARM binaries, so we exclude these:
-        exclude:
-          - python-version: pypy3.7-v7.3
-            host: armv7-neon-linux-gnueabihf
-          - python-version: pypy3.8-v7.3
-            host: armv7-neon-linux-gnueabihf
-          - python-version: pypy3.9-v7.3
-            host: armv7-neon-linux-gnueabihf
-          - python-version: pypy3.10-v7.3
-            host: armv7-neon-linux-gnueabihf
-          - python-version: pypy3.7-v7.3
-            host: armv6-rpi-linux-gnueabihf
-          - python-version: pypy3.8-v7.3
-            host: armv6-rpi-linux-gnueabihf
-          - python-version: pypy3.9-v7.3
-            host: armv6-rpi-linux-gnueabihf
-          - python-version: pypy3.10-v7.3
-            host: armv6-rpi-linux-gnueabihf
+        host: [x86_64-bionic-linux-gnu, aarch64-rpi3-linux-gnu]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Conan and sccache
+        uses: ./.github/workflows/setup-conan
+        with:
+          python-version: '3.12'
+          cache-key: build-${{ matrix.host }}
 
       - name: Download sdist
         uses: actions/download-artifact@v4
@@ -155,33 +102,53 @@ jobs:
       - name: Extract sdist
         run: mkdir sdist && tar xf dist/*.tar.gz -C sdist --strip-components 1
 
-      - name: Build
-        uses: ./.github/workflows/python-build
-        with:
-          source-dir: sdist
-          host: ${{ matrix.host }}
-          python-version: ${{ matrix.python-version }}
+      - name: Build Wheels
+        run: |
+          for v in 3.8 3.13; do
+            ./scripts/ci/build-linux-cross.sh $v ${{ matrix.host }} sdist dist
+          done
 
-      - name: Upload package
+      - name: Upload Wheels
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-${{ matrix.host }}-${{ matrix.python-version }}
-          path: ./sdist/dist/*.whl
+          name: wheels-${{ matrix.host }}
+          path: ./dist/*.whl
+
+      - run: conan cache clean
 
   # Build for Windows and macOS using cibuildwheel.
   # Since we're not specifying any cross-compilation settings, py-build-cmake
   # will use its default cross-compilation settings for Windows on ARM64.
   # For macOS, we build universal wheels that work on both Intel and ARM macs.
   build-macos-windows:
-    name: Build wheels for ${{ matrix.os }}
+    name: Build wheels (${{ matrix.os }}, ${{ matrix.cibw-arch }})
     needs: [build-sdist]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        include:
+          - {os: windows-latest, cibw-arch: AMD64, arch: amd64}
+          - {os: windows-latest, cibw-arch: x86, arch: amd64_x86}
+          - {os: windows-latest, cibw-arch: ARM64, arch: amd64_arm64}
+          - {os: macos-latest, cibw-arch: universal2}
+      fail-fast: false
+    env:
+      SCCACHE_CACHE_MULTIARCH: "1"
+      CIBW_ARCHS: ${{ matrix.cibw-arch }}
+      CIBW_ENABLE: 'pypy'
+      CIBW_BUILD: 'cp38 cp313-* pp310-*'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Conan and sccache
+        uses: ./.github/workflows/setup-conan
+        with:
+          python-version: "3.12"
+          cache-key: cibuildwheel-${{ matrix.cibw-arch }}
+
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel~=2.22.0
 
       - name: Download sdist
         uses: actions/download-artifact@v4
@@ -190,31 +157,33 @@ jobs:
           path: dist
       - name: Extract sdist
         shell: bash
-        run: |
-          mkdir sdist
-          tar xf dist/*.tar.gz -C sdist --strip-components 1
-          cp -a scripts sdist
+        run: mkdir sdist && tar xf dist/*.tar.gz -C sdist --strip-components 1 && cp -a scripts sdist
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@ee63bf16da6cddfb925f542f2c7b59ad50e93969
-        with:
-          package-dir: sdist
-          output-dir: dist
-        env:
-          CIBW_ENABLE: 'pypy'
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.arch }}
+          cibuildwheel sdist --output-dir dist
+
+      - name: Build wheels
+        if: runner.os != 'Windows'
+        run: cibuildwheel sdist --output-dir dist
 
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-${{ matrix.os }}
+          name: wheels-${{ matrix.os }}-${{ matrix.cibw-arch }}
           path: ./dist/*.whl
+
+      - run: conan cache clean
 
   # This step checks the package version before release (to make sure that the
   # package version actually matches the version of the GitHub release tag),
   # and uses Twine to check the metadata of the packages.
   check-release:
     if: ${{ github.event.action == 'released' || github.event.action == 'prereleased' }}
-    needs: [build-sdist, test-linux, build-macos-windows]
+    needs: [build-sdist, test-linux, build-linux, build-macos-windows]
     runs-on: ubuntu-latest
     container: python:3.12-bullseye
     steps:
@@ -228,7 +197,8 @@ jobs:
         run: python -m pip install --no-deps --no-index --find-links=dist ${PACKAGE_NAME}==${PACKAGE_VERSION}
       - name: Check package version
         run: |
-          [ "${{ github.event.release.tag_name }}" == $(python -c 'from importlib.metadata import version as v; print(v("${{ env.PACKAGE_NAME }}"))') ]
+          version="$(python -c 'from importlib.metadata import version as v; print(v("${{ env.PACKAGE_NAME }}"))')"
+          [ "${{ github.event.release.tag_name }}" = "$version" ]
         shell: bash
       - name: Twine check
         run: |

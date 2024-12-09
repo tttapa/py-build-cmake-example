@@ -53,6 +53,7 @@ arch={conan_arch}
 build_type=Release
 [conf]
 tools.build:skip_test=True
+tools.cmake.cmaketoolchain:generator=Ninja Multi-Config
 tools.build:cflags+={cpu_flags}
 tools.build:cxxflags+={cpu_flags}
 """
@@ -69,7 +70,4 @@ Path("cibw.profile").write_text(profile)
 print(profile)
 
 opts = dict(shell=True, check=True)
-run(
-    "conan install . -pr:h ./cibw.profile --build=missing -s build_type=Release",
-    **opts,
-)
+run("conan install . -pr:h ./cibw.profile --build=missing", **opts)
