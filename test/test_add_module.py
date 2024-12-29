@@ -1,3 +1,4 @@
+from importlib.metadata import version
 from py_build_cmake_example.add_module import add
 
 
@@ -13,8 +14,4 @@ from py_build_cmake_example._add_module import __version__ as cpp_version
 def test_version():
     assert py_version == py_cpp_version
     assert py_version == cpp_version
-    try: # No importlib in Python 3.7 and below
-        from importlib.metadata import version
-        assert py_version == version('py_build_cmake_example')
-    except ImportError:
-        pass
+    assert py_version == version("py_build_cmake_example")
