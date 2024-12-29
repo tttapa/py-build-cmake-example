@@ -104,7 +104,7 @@ jobs:
 
       - name: Build Wheels
         run: |
-          for v in 3.8 3.13; do
+          for v in 3.8 3.9 3.10 3.11 3.12 3.13; do
             ./scripts/ci/build-linux-cross.sh $v ${{ matrix.host }} sdist dist
           done
 
@@ -136,7 +136,6 @@ jobs:
       SCCACHE_CACHE_MULTIARCH: "1"
       CIBW_ARCHS: ${{ matrix.cibw-arch }}
       CIBW_ENABLE: 'pypy'
-      CIBW_BUILD: 'cp38 cp313-* pp310-*'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
