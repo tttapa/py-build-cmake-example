@@ -4,10 +4,10 @@ set(PY_VERSION_SUFFIX "")  # e.g. b3.dev1, see PEP 440
 set(PY_FULL_VERSION ${PROJECT_VERSION}${PY_VERSION_SUFFIX})
 
 # Make sure that the Python and CMake versions match
-if (DEFINED PY_BUILD_CMAKE_PACKAGE_VERSION)
-    if (NOT "${PY_BUILD_CMAKE_PACKAGE_VERSION}" MATCHES "^${PY_FULL_VERSION}$")
+if (DEFINED PY_BUILD_CMAKE_PROJECT_VERSION)
+    if (NOT "${PY_BUILD_CMAKE_PROJECT_VERSION}" MATCHES "^${PY_FULL_VERSION}$")
         message(FATAL_ERROR "Version number does not match "
-                             "(${PY_BUILD_CMAKE_PACKAGE_VERSION} - ${PY_FULL_VERSION}).")
+                             "(${PY_BUILD_CMAKE_PROJECT_VERSION} - ${PY_FULL_VERSION}).")
     endif()
 endif()
 
@@ -37,7 +37,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 # Install the Python module
-set(PYTHON_MODULE_DESTINATION ${PY_BUILD_CMAKE_MODULE_NAME})
+set(PYTHON_MODULE_DESTINATION ${PY_BUILD_CMAKE_IMPORT_NAME})
 install(TARGETS _add_module
         EXCLUDE_FROM_ALL
         COMPONENT python_modules
