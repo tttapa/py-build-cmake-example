@@ -7,9 +7,22 @@
 This is an example project using [py-build-cmake](https://github.com/tttapa/py-build-cmake)
 to build Python bindings for C++ code.
 
-The package uses modern CMake, and uses Conan for installing C++ dependencies.
-Python stub files for autocompletion and type checking are generated
-automatically.
+## Features
+
+ - Building Python bindings for C++ code
+ - `pyproject.toml` for configuration and metadata
+ - Modern CMake build system
+ - Installation of C++ dependencies using Conan
+ - Automatic Python stub file generation for autocomplete and type checking
+ - Continuous integration workflows for building Wheel packages for various platforms
+ - Conan dependency caching
+ - Compilation caching using sccache
+ - Trusted publishing to PyPI
+ - Testing using `pytest`
+
+The project uses modern CMake, and uses Conan for painless installation of C++
+dependencies. Python stub files for autocompletion and type checking are
+generated automatically.
 
 It includes extensive continuous integration (CI) scripts, building and testing
 packages using [cibuildwheel](https://github.com/pypa/cibuildwheel), and
@@ -42,13 +55,14 @@ py-build-cmake-example
 │   └── Pybind11Stubgen.cmake   -- automatic Python stub generation
 ├── .github
 │   └── workflows
-│       ├── python-build
-│       │   └── action.yml      -- CI script to (cross-)compile the package
+│       ├── setup-conan
+│       │   └── action.yml      -- CI script to install Conan and sccache
 │       └── wheels.yml          -- CI script to build and publish the package
 ├── scripts
-│   └── ci                      -- CIBW scripts to install Conan dependencies
-│       ├── pre-build-macos.py
-│       └── pre-build-windows.py
+│   └── ci                      -- Continuous integration scripts and configs
+│       ├── ...                    -- Shell and Python scripts for building
+│       └── profiles               -- Conan profiles with build configurations
+│           └── ...
 ├── test                        -- Unit tests for the package
 │   ├── test_add_module.py
 │   └── test_sub_package.py
