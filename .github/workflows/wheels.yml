@@ -78,12 +78,12 @@ jobs:
   # After the native build, we have the stub files, and we can start cross-
   # compiling for all architectures.
   build-linux:
-    name: Build wheels (${{ matrix.host }})
+    name: Build (${{ matrix.host }})
     needs: [build-sdist]
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        host: [x86_64-bionic-linux-gnu, aarch64-rpi3-linux-gnu]
+        host: [x86_64-bionic-linux-gnu, aarch64-rpi3-linux-gnu, armv7-neon-linux-gnueabihf, armv6-rpi-linux-gnueabihf]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -121,7 +121,7 @@ jobs:
   # will use its default cross-compilation settings for Windows on ARM64.
   # For macOS, we build universal wheels that work on both Intel and ARM macs.
   build-macos-windows:
-    name: Build wheels (${{ matrix.os }}, ${{ matrix.cibw-arch }})
+    name: Build (${{ matrix.cibw-arch }}-${{ matrix.os }})
     needs: [build-sdist]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -131,6 +131,8 @@ jobs:
           - {os: windows-latest, cibw-arch: x86, arch: amd64_x86}
           - {os: windows-latest, cibw-arch: ARM64, arch: amd64_arm64}
           - {os: macos-latest, cibw-arch: universal2}
+          - {os: macos-latest, cibw-arch: x86_64}
+          - {os: macos-latest, cibw-arch: arm64}
       fail-fast: false
     env:
       SCCACHE_CACHE_MULTIARCH: "1"
@@ -181,6 +183,7 @@ jobs:
   # package version actually matches the version of the GitHub release tag),
   # and uses Twine to check the metadata of the packages.
   check-release:
+    name: Check release
     if: ${{ github.event.action == 'released' || github.event.action == 'prereleased' }}
     needs: [build-sdist, test-linux, build-linux, build-macos-windows]
     runs-on: ubuntu-latest
@@ -209,6 +212,7 @@ jobs:
   # https://github.com/pypa/gh-action-pypi-publish README and on
   # https://docs.pypi.org/trusted-publishers carefully!
   release:
+    name: Release
     needs: [check-release]
     if: ${{ github.event.action == 'released' || github.event.action == 'prereleased' }}
     runs-on: ubuntu-latest
