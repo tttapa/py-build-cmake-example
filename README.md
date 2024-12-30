@@ -70,6 +70,24 @@ py-build-cmake-example
     └── add_example.py          -- Python script that imports our package
 ```
 
+## Continuous Integration
+
+The continuous integration workflows are built using GitHub actions and perform
+the following steps when creating a release:
+
+ 1. The package is built natively on Linux. This allows importing the package to
+    generate the Python stub files (for type hints and code completion). These
+    stub files are then included in the cross-compiled packages later on.
+ 2. The unit tests are run using pytest.
+ 3. The package is cross-compiled for various Python versions, architectures and
+    operating systems (Linux x86-64, ARM64, ARMv7 and ARMv6; Windows x86, x86-64
+    and ARM64; macOS Universal2, x86-64 and ARM64).
+ 4. A final pre-release check is performed to make sure the version of the
+    Python package matches the version of the GitHub release.
+ 5. The package is published to test-PyPI using trusted publishing.
+
+![CI pipeline](https://tttapa.github.io/py-build-cmake/images/ci-pipeline.png)
+
 ## Local installation
 
 Make sure you have Python 3 and a C++ compiler installed. CMake and Ninja can be
