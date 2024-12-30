@@ -1,0 +1,37 @@
+name: Python Tests
+
+on:
+  workflow_dispatch:
+  push: {tags-ignore: ['**'], branches: ['**']}
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Conan
+        uses: ./.github/workflows/setup-conan
+        with:
+          python-version: '3.12'
+          cache-key: build-and-test
+
+      - name: Build Wheel package
+        run: ./scripts/ci/build-linux-native.sh . dist
+
+      - name: Install Wheel package
+        run: python3 -m pip install "$(ls dist/*.whl)[test]"
+
+      - name: Upload Wheel package
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-wheels
+          path: ./dist/*.whl
+          retention-days: 1
+
+      - name: Run tests
+        run: pytest -rP
+
+      - run: conan cache clean
