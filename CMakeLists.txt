@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
-project(py-build-cmake-example VERSION 0.3.4)
-set(PY_VERSION_SUFFIX ".post1")  # e.g. b3.dev1, see PEP 440
+project(py-build-cmake-example VERSION 0.4.0)
+set(PY_VERSION_SUFFIX "a0")  # e.g. b3.dev1, see PEP 440
 set(PY_FULL_VERSION ${PROJECT_VERSION}${PY_VERSION_SUFFIX})
 
 # Make sure that the Python and CMake versions match
