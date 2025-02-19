@@ -41,8 +41,8 @@ py-build-cmake-example
 ├── conanfile.txt          -- C++ dependencies
 ├── CMakeLists.txt         -- CMake build script
 ├── src
-│   └── add_module.cpp          -- pybind11 extension module written in C++
-├── python-src
+│   ├── ext                     -- Source code for extension modules
+│   │   └── add_module.cpp          -- pybind11 extension module written in C++
 │   └── py_build_cmake_example  -- Python package (without extension module)
 │       ├── __init__.py
 │       ├── add_module.py            -- Wrapper for the extension module

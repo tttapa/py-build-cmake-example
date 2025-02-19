@@ -47,11 +47,11 @@ build-backend = "py_build_cmake.build"
 # The module section points py-build-cmake to the Python sources of the package.
 [tool.py-build-cmake.module]
 name = "py_build_cmake_example" # Import name
-directory = "python-src"
+directory = "src"
 
 # The sdist section determines which files are included in source distributions.
 [tool.py-build-cmake.sdist]
-include = ["conanfile.py", "CMakeLists.txt", "cmake", "src"]
+include = ["conanfile.py", "CMakeLists.txt", "cmake", "src/ext"]
 
 # Here we tell py-build-cmake how to build the CMake project. Since we're using
 # Conan for the dependencies, we select the CMake presets accordingly.

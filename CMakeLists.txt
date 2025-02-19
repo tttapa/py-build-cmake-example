@@ -23,7 +23,7 @@ set(PYBIND11_USE_CROSSCOMPILING On) # https://github.com/pybind/pybind11/pull/50
 find_package(pybind11 REQUIRED)
 
 # Compile the example Python module
-pybind11_add_module(_add_module MODULE "src/add_module.cpp")
+pybind11_add_module(_add_module MODULE "src/ext/add_module.cpp")
 target_compile_definitions(_add_module PRIVATE
     MODULE_NAME=_add_module
     VERSION_INFO="${PY_FULL_VERSION}"
