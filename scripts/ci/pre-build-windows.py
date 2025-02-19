@@ -46,6 +46,11 @@ cpu_flags = {
     "win-arm64": [],
 }[plat_name]
 
+module_linker_flags = {  # https://github.com/conan-io/conan/issues/17539
+    f"CMAKE_MODULE_LINKER_FLAGS{c}_INIT": f"${{CMAKE_SHARED_LINKER_FLAGS{c}_INIT}}"
+    for c in ("", "_DEBUG", "_RELEASE", "_RELWITHDEBINFO")
+}
+
 native_profile = f"""\
 include(default)
 [settings]
@@ -56,6 +61,7 @@ tools.build:skip_test=True
 tools.cmake.cmaketoolchain:generator=Ninja Multi-Config
 tools.build:cflags+={cpu_flags}
 tools.build:cxxflags+={cpu_flags}
+tools.cmake.cmaketoolchain:extra_variables*={repr(module_linker_flags)}
 """
 cross_profile = native_profile
 cross_profile += f"""\
@@ -66,8 +72,8 @@ tools.cmake.cmaketoolchain:system_processor={cmake_processor}
 
 cross = not can_run
 profile = cross_profile if cross else native_profile
-Path("cibw.profile").write_text(profile)
 print(profile)
+Path("cibw.profile").write_text(profile)
 
 opts = dict(shell=True, check=True)
 run("conan install . -pr:h ./cibw.profile --build=missing", **opts)

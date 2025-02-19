@@ -6,6 +6,7 @@ CMakeUserPresets.json
 *py-build-cmake.cross.pbc
 *.local.profile
 *.cross.profile
+cibw.profile
 
 # Temporary build and cache folders
 build
