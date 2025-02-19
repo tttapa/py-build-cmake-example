@@ -109,6 +109,15 @@ before-build = [
     "python {package}\\scripts\\ci\\pre-build-windows.py",
 ]
 
+[tool.cibuildwheel.pyodide]
+before-build = [
+    "pip install cmake 'conan>=2,<3' ninja",
+    "conan profile detect -f",
+    "rm -rf {package}/build",
+    "python {package}/scripts/ci/pre-build-pyodide.py",
+]
+environment = { "_PY_BUILD_CMAKE_PYODIDE_NO_TOOLCHAIN_FILE" = "1" }
+
 # ---------------------------------------------------------------------------- #
 
 # You can add other tool-specific configuration options, e.g. for the pytest
