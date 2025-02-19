@@ -1,0 +1,53 @@
+name: Pyodide Tests
+
+on:
+  workflow_dispatch:
+  push: {tags-ignore: ['**'], branches: ['**']}
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Conan
+        uses: ./.github/workflows/setup-conan
+        with:
+          python-version: '3.12'
+          cache-key: build-pyodide
+
+      - name: Download py-build-cmake
+        run: git clone https://github.com/tttapa/py-build-cmake --branch pyodide
+
+      - name: Build py-build-cmak
+        run: |
+          sed -i 's/^name = "py-build-cmake"/name = "py-build-cmak"/' py-build-cmake/pyproject.toml
+          python3.12 -m pip install -U build
+          python3.12 -m build -w ./py-build-cmake -o pbc-dist
+          python3.12 -m pip install pbc-dist/*.whl
+
+       # https://github.com/pyodide/pyodide-build/issues/100
+      - name: Patch name
+        run: |
+          v=$(python3.12 -m py_build_cmake.cli --version | awk '{print $NF}')
+          sed -i "s/\"py-build-cmake~=[^\"]*\"/\"py-build-cmak~=$v\"/g" pyproject.toml
+
+      - name: Build Wheels
+        uses: pypa/cibuildwheel@7940a4c0e76eb2030e473a5f864f291f63ee879b
+        with:
+          output-dir: dist
+
+        env:
+          CIBW_PLATFORM: pyodide
+          CIBW_ENVIRONMENT: 'PIP_FIND_LINKS=${{ github.workspace }}/pbc-dist PY_BUILD_CMAKE_VERBOSE=1 _PY_BUILD_CMAKE_PYODIDE_NO_TOOLCHAIN_FILE=1'
+
+      - name: Upload Wheel package
+        uses: actions/upload-artifact@v4
+        with:
+          name: pyodide-wheels
+          path: dist/*.whl
+          retention-days: 1
+
+      - run: conan cache clean
