@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.25)
-project(py-build-cmake-example VERSION 0.4.2)
+cmake_minimum_required(VERSION 4.0...4.1)
+project(py-build-cmake-example VERSION 0.5.0)
 set(PY_VERSION_SUFFIX "")  # e.g. b3.dev1, see PEP 440
 set(PY_FULL_VERSION ${PROJECT_VERSION}${PY_VERSION_SUFFIX})
 
@@ -52,8 +52,6 @@ if (WIN32)
 endif()
 
 # Generate stubs for the Python module
-set(PY_STUBS_INSTALLDIR ""
-    CACHE PATH "Installation directory for Python stubs (relative to Python package)")
 set(WITH_PY_STUBS_DEFAULT On)
 if (CMAKE_CROSSCOMPILING)
     set(WITH_PY_STUBS_DEFAULT Off)
@@ -65,7 +63,6 @@ if (WITH_PY_STUBS)
     include(cmake/Pybind11Stubgen.cmake)
     pybind11_stubgen(_add_module
         PACKAGE ${PYTHON_MODULE_DESTINATION}
-        DESTINATION ${PY_STUBS_INSTALLDIR}
         COMPONENT python_stubs
     )
 endif()
