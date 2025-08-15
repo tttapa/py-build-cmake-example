@@ -34,7 +34,7 @@ tools.build:skip_test=true
 [options]
 &:with_conan_python=True
 [replace_requires]
-tttapa-python-dev/*: tttapa-python-dev/[~$python_majmin]
+tttapa-python-dev/*: tttapa-python-dev/[~$python_majmin, include_prerelease]
 EOF
 
 # Install dependencies using Conan
