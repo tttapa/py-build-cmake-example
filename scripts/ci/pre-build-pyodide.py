@@ -12,10 +12,10 @@ assert "PYODIDE_ROOT" in os.environ
 # Determine the Clang version
 result = run(["emcc", "-v"], stderr=sp.PIPE, text=True, check=True)
 print(result.stderr)
-m = re.search(r"clang version (\d+)", result.stderr)
+m = re.search(r"emcc \([^)]+\) ([\d\.]+)", result.stderr)
 if not m:
-    raise RuntimeError("Failed to determine Emscripten emcc Clang version")
-clang_version = m.group(1)
+    raise RuntimeError("Failed to determine Emscripten emcc version")
+emcc_version = m.group(1)
 
 # We need a wrapper around the Pyodide toolchain file, because it is only set
 # later during the actual build, we don't know its path yet during the pre-build
@@ -40,8 +40,8 @@ profile = f"""\
 [settings]
 os=Emscripten
 arch=wasm
-compiler=clang
-compiler.version={clang_version}
+compiler=emcc
+compiler.version={emcc_version}
 compiler.libcxx=libc++
 build_type=Release
 
