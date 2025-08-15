@@ -14,7 +14,7 @@ class Recipe(ConanFile):
     generators = "CMakeDeps", "CMakeToolchain"
 
     def requirements(self):
-        self.requires("pybind11/2.13.6")
+        self.requires("pybind11/3.0.0")
         if self.options.with_conan_python:
             self.requires("tttapa-python-dev/3.13.1")
 
