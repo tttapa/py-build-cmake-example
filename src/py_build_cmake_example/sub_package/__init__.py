@@ -1,2 +1,5 @@
 """Example package that subtracts two integers in Python."""
-from .sub import *
+
+from .sub import sub
+
+__all__ = ["sub"]
