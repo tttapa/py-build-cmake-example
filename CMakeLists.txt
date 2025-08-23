@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0...4.1)
+cmake_minimum_required(VERSION 4.1)
 project(py-build-cmake-example VERSION 0.5.0)
 set(PY_VERSION_SUFFIX "")  # e.g. b3.dev1, see PEP 440
 set(PY_FULL_VERSION ${PROJECT_VERSION}${PY_VERSION_SUFFIX})

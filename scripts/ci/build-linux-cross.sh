@@ -22,9 +22,6 @@ esac
 pkg_dir="${3:-.}"
 out_dir="${4:-dist}"
 
-# Initial cleanup
-rm -rf "$pkg_dir"/build/{generators,CMakeCache.txt}
-
 # Create Conan profile to inject the appropriate Python development files
 python_profile="$PWD/conan-python.cross.profile"
 cat << EOF > "$python_profile"
@@ -37,9 +34,6 @@ tools.build:skip_test=true
 tttapa-python-dev/*: tttapa-python-dev/[~$python_majmin, include_prerelease]
 EOF
 
-# Install dependencies using Conan
-conan install "$pkg_dir" --build=missing -pr "$python_profile"
-
 # Create a py-build-cmake configuration file for cross-compilation
 pbc_config="$PWD/$triple.py-build-cmake.cross.pbc"
 cat << EOF > "$pbc_config"
@@ -48,9 +42,11 @@ implementation=cp
 version="$python_majmin_nodot"
 abi="cp$python_majmin_nodot"
 arch="$plat_tag"
-cmake.options.CMAKE_C_COMPILER_LAUNCHER=sccache
-cmake.options.CMAKE_CXX_COMPILER_LAUNCHER=sccache
-cmake.build_args+=["--verbose"]
+conan.profile_host=["$python_profile"]
+conan.cmake.options.CMAKE_C_COMPILER_LAUNCHER=sccache
+conan.cmake.options.CMAKE_CXX_COMPILER_LAUNCHER=sccache
+conan.cmake.args+=["--fresh"]
+conan.cmake.build_args+=["--verbose"]
 EOF
 
 # Build the Python packages

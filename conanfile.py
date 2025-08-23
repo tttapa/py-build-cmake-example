@@ -16,7 +16,10 @@ class Recipe(ConanFile):
     def requirements(self):
         self.requires("pybind11/3.0.0")
         if self.options.with_conan_python:
-            self.requires("tttapa-python-dev/3.13.1")
+            self.requires("tttapa-python-dev/3.13.7")
+
+    def build_requirements(self):
+        self.tool_requires("cmake/[>=4.1 <5]")
 
     def layout(self):
         cmake_layout(self)
