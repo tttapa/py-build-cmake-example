@@ -8,6 +8,9 @@ CMakeUserPresets.json
 *.cross.profile
 cibw.profile
 
+# Automatically generated stub files
+src/py_build_cmake_example/_*.pyi
+
 # Temporary build and cache folders
 build
 .*cache
