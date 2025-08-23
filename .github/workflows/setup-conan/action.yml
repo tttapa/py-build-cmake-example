@@ -74,15 +74,6 @@ runs:
       recipes="${{ github.workspace }}/tttapa-conan-recipes"
       git clone https://github.com/tttapa/conan-recipes "$recipes"
       conan remote add tttapa-conan-recipes "$recipes" --force
-      cat << EOF >> "$(conan config home)/profiles/default"
-      {% if platform.system() != "Windows" %}
-      [conf]
-      tools.cmake.cmaketoolchain:generator=Ninja
-      [tool_requires]
-      cmake/[>=4.1 <5]
-      ninja/[*]
-      {% endif %}
-      EOF
 
   - name: Install build-essential
     if: runner.os == 'Linux'
