@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 4.1)
+cmake_policy(SET CMP0155 OLD)
 project(py-build-cmake-example VERSION 0.5.1)
 set(PY_VERSION_SUFFIX ".dev0")  # e.g. b3.dev1, see PEP 440
 set(PY_FULL_VERSION ${PROJECT_VERSION}${PY_VERSION_SUFFIX})
