@@ -6,7 +6,7 @@ on:
     types: ['released', 'prereleased']
 
 env:
-  PACKAGE_VERSION: '0.5.0'
+  PACKAGE_VERSION: '0.5.1.dev0'
   PACKAGE_NAME: py-build-cmake-example
 
 jobs:

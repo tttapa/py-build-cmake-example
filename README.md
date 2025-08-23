@@ -38,7 +38,7 @@ py-build-cmake-example
 ├── README.md
 ├── LICENSE
 ├── pyproject.toml         -- Python project metadata and py-build-cmake options
-├── conanfile.txt          -- C++ dependencies
+├── conanfile.py           -- C++ dependencies
 ├── CMakeLists.txt         -- CMake build script
 ├── src
 │   ├── ext                     -- Source code for extension modules
@@ -60,7 +60,7 @@ py-build-cmake-example
 │       └── wheels.yml          -- CI script to build and publish the package
 ├── scripts
 │   └── ci                      -- Continuous integration scripts and configs
-│       ├── ...                    -- Shell and Python scripts for building
+│       ├── ...                    -- Shell scripts for building
 │       └── profiles               -- Conan profiles with build configurations
 │           └── ...
 ├── test                        -- Unit tests for the package
@@ -137,10 +137,8 @@ py -3 examples/add_example.py
 
 **Linux/macOS**
 ```sh
-# Install py-build-cmake
-python3 -m pip install py-build-cmake~=0.5.0 pybind11-stubgen~=2.5.5
-# Install the debug version of the C++ dependencies
-conan install . --build=missing -c tools.cmake.cmaketoolchain:generator="Ninja Multi-Config" -s build_type=Debug
+# Install py-build-cmake and other build requirements
+python3 -m pip install py-build-cmake~=0.5.1.dev0 pybind11-stubgen~=2.5.5 conan~=2.19.1
 ```
 
 With the project open in VSCode, go to the “Debug” panel and start debugging
@@ -150,10 +148,8 @@ session will start.
 
 **Windows**
 ```sh
-# Install py-build-cmake
-py -3 -m pip install py-build-cmake~=0.5.0 pybind11-stubgen~=2.5.5
-# Install the debug version of the C++ dependencies
-conan install . --build=missing -s build_type=Debug
+# Install py-build-cmake and other build requirements
+py -3 -m pip install py-build-cmake~=0.5.1.dev0 pybind11-stubgen~=2.5.5 conan~=2.19.1
 ```
 
 With the project open in VSCode, select a debug version of Python
