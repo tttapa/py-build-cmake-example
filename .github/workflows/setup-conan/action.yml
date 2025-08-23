@@ -27,11 +27,19 @@ runs:
     with:
       python-version: ${{ inputs.python-version }}
 
+  - name: Build py-build-cmake
+    shell: bash
+    run: |
+      git clone https://github.com/tttapa/py-build-cmake --branch conan
+      pip install -U pip build
+      python3 -m build -w py-build-cmake
+      echo "PIP_FIND_LINKS=$PWD/py-build-cmake/dist" >> "$GITHUB_ENV"
+
   - name: Install Python dependencies
     shell: bash
     run: >
-      pip install -U pip build conan cmake ninja
-      'py-build-cmake~=0.5.1.dev0' 'pybind11-stubgen~=2.5.5'
+      pip install -U pip build
+      conan~=2.19.1 'py-build-cmake~=0.5.1.dev0' 'pybind11-stubgen~=2.5.5'
 
   - name: Configure sccache version
     shell: bash
