@@ -27,6 +27,7 @@ conan.cmake.build_args+=["--verbose"]
 EOF
 
 # Build the Python package
+python3 -m pip install -U build
 python3 -m build -w "$pkg_dir" -o "$out_dir" -C local="$pbc_config"
 
 # Install the Python stubs
