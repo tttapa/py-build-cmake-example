@@ -13,7 +13,7 @@ if (DEFINED PY_BUILD_CMAKE_PROJECT_VERSION)
 endif()
 
 # Find the Python development files
-if (CMAKE_CROSSCOMPILING AND NOT (APPLE AND "$ENV{CIBUILDWHEEL}" STREQUAL "1"))
+if (CMAKE_CROSSCOMPILING AND NOT CMAKE_CROSSCOMPILING_EMULATOR)
     find_package(Python3 REQUIRED COMPONENTS Development.Module)
 else()
     find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
