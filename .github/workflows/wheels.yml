@@ -104,7 +104,7 @@ jobs:
 
       - name: Build Wheels
         run: |
-          for v in 3.8 3.9 3.10 3.11 3.12 3.13; do
+          for v in 3.8 3.9 3.10 3.11 3.12 3.13 3.14; do
             ./scripts/ci/build-linux-cross.sh $v ${{ matrix.host }} sdist dist
           done
 
@@ -133,6 +133,9 @@ jobs:
           - {os: macos-latest, cibw-arch: universal2}
           - {os: macos-latest, cibw-arch: x86_64}
           - {os: macos-latest, cibw-arch: arm64}
+          - {os: macos-13, cibw-arch: universal2}
+          - {os: macos-13, cibw-arch: x86_64}
+          - {os: macos-13, cibw-arch: arm64}
       fail-fast: false
     env:
       SCCACHE_CACHE_MULTIARCH: "1"
