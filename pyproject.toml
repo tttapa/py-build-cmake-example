@@ -67,7 +67,6 @@ include = ["conanfile.py", "CMakeLists.txt", "cmake", "src/ext"]
 
 # Here we tell py-build-cmake how to build the CMake project. Since we're using
 # Conan for the dependencies, we select the CMake presets accordingly.
-[tool.py-build-cmake.conan]
 [tool.py-build-cmake.conan.cmake]
 minimum_version = "4.1"
 build_type = "Release"
@@ -91,7 +90,7 @@ generator = "Ninja Multi-Config"
 # package locally.
 [tool.cibuildwheel]
 archs = ["auto64"]
-skip = "pp311-*"  # Fatal RPython error: AssertionError inside of PythonCodeMaker_optimize_unreachable_code
+skip = "pp311-*"  # https://github.com/pypy/pypy/issues/5328
 build-frontend = "build"
 environment = { "PY_BUILD_CMAKE_VERBOSE" = "1" }
 config-settings = { "local" = "scripts/ci/cibw.py-build-cmake.toml" }
