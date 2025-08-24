@@ -91,6 +91,7 @@ generator = "Ninja Multi-Config"
 # package locally.
 [tool.cibuildwheel]
 archs = ["auto64"]
+skip = "pp311-*"  # Fatal RPython error: AssertionError inside of PythonCodeMaker_optimize_unreachable_code
 build-frontend = "build"
 environment = { "PY_BUILD_CMAKE_VERBOSE" = "1" }
 config-settings = { "local" = "scripts/ci/cibw.py-build-cmake.toml" }
