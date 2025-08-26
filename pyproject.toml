@@ -93,9 +93,10 @@ archs = ["auto64"]
 skip = "pp311-*"  # https://github.com/pypy/pypy/issues/5328
 build-frontend = "build"
 environment = { "PY_BUILD_CMAKE_VERBOSE" = "1" }
-config-settings = { "local" = "scripts/ci/cibw.py-build-cmake.toml" }
 test-extras = ["test"] # refers to [project.optional-dependencies].test above
 test-command = "pytest {project}/test"
+[tool.cibuildwheel.config-settings]
+--local = "scripts/ci/cibw.py-build-cmake.toml"
 
 [tool.cibuildwheel.macos]
 archs = ["arm64", "x86_64", "universal2"]

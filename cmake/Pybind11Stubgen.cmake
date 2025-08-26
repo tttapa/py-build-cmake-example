@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 4.1)
+
 function(pybind11_stubgen target)
 
     # Parse arguments
