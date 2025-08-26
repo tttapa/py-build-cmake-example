@@ -25,9 +25,6 @@ out_dir="${4:-dist}"
 # Create Conan profile to inject the appropriate Python development files
 python_profile="$PWD/conan-python.cross.profile"
 cat << EOF > "$python_profile"
-include($PWD/scripts/ci/profiles/$triple.profile)
-[conf]
-tools.build:skip_test=true
 [options]
 &:with_conan_python=True
 [replace_requires]
@@ -42,7 +39,7 @@ implementation=cp
 version="$python_majmin_nodot"
 abi="cp$python_majmin_nodot"
 arch="$plat_tag"
-conan.profile_host=["$python_profile"]
+conan.profile_host=["$PWD/scripts/ci/profiles/$triple.profile", "$python_profile"]
 conan.cmake.options.CMAKE_C_COMPILER_LAUNCHER=sccache
 conan.cmake.options.CMAKE_CXX_COMPILER_LAUNCHER=sccache
 conan.cmake.args+=["--fresh"]
