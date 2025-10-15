@@ -48,9 +48,9 @@ add = "py_build_cmake_example.add:main"
 # pybind11-stubgen package to generate stub files for the extension module.
 [build-system]
 requires = [
-    "py-build-cmake~=0.5.1.dev0",
+    "py-build-cmake~=0.6.0a2",
     "pybind11-stubgen~=2.5.5",
-    "conan~=2.19.1",
+    "conan~=2.21.0",
 ]
 build-backend = "py_build_cmake.build"
 

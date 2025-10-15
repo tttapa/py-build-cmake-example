@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 4.1)
 cmake_policy(SET CMP0155 OLD)
-project(py-build-cmake-example VERSION 0.5.1)
-set(PY_VERSION_SUFFIX ".dev0")  # e.g. b3.dev1, see PEP 440
+project(py-build-cmake-example VERSION 0.6.0)
+set(PY_VERSION_SUFFIX "a2.dev0")  # e.g. b3.dev1, see PEP 440
 set(PY_FULL_VERSION ${PROJECT_VERSION}${PY_VERSION_SUFFIX})
 
 # Make sure that the Python and CMake versions match
@@ -13,7 +13,7 @@ if (DEFINED PY_BUILD_CMAKE_PROJECT_VERSION)
 endif()
 
 # Find the Python development files
-if (CMAKE_CROSSCOMPILING AND NOT CMAKE_CROSSCOMPILING_EMULATOR)
+if (CMAKE_CROSSCOMPILING AND NOT CMAKE_CROSSCOMPILING_EMULATOR OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     find_package(Python3 REQUIRED COMPONENTS Development.Module)
 else()
     find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
@@ -57,13 +57,11 @@ set(WITH_PY_STUBS_DEFAULT On)
 if (CMAKE_CROSSCOMPILING)
     set(WITH_PY_STUBS_DEFAULT Off)
 endif()
-option(WITH_PY_STUBS
-    "Generate Python stub files (.pyi) for the Python module."
-    ${WITH_PY_STUBS_DEFAULT})
+option(WITH_PY_STUBS "Generate Python stub files (.pyi) for the module."
+       ${WITH_PY_STUBS_DEFAULT})
 if (WITH_PY_STUBS)
     include(cmake/Pybind11Stubgen.cmake)
     pybind11_stubgen(_add_module
         PACKAGE ${PYTHON_MODULE_DESTINATION}
-        COMPONENT python_stubs
-    )
+        COMPONENT python_stubs)
 endif()

@@ -24,7 +24,7 @@ python3 -m build -w "$pkg_dir" -o "$out_dir" -C local="$pbc_config"
 # Install the Python stubs
 if [ -n "$install_stubs_dir" ]; then
     # Install py-build-cmake and pybind11-stubgen
-    python3 -m pip install 'py-build-cmake~=0.5.1.dev0' 'pybind11-stubgen~=2.5.5'
+    python3 -m pip install 'py-build-cmake~=0.6.0a2' 'pybind11-stubgen~=2.5.5'
     # Determine Conan's build directory
     pbc=(python3 -m py_build_cmake.cli -C "$pkg_dir" --local="$pbc_config")
     build_config="$("${pbc[@]}" build-config-name)"
@@ -32,8 +32,7 @@ if [ -n "$install_stubs_dir" ]; then
     # Activate the Conan build environment (ensures that CMake is in PATH)
     set +x; source "$build_dir/generators/conanbuild.sh"; set -x
     # Re-run CMake to change Python executable (old one is in a temporary venv)
-    cmake "$build_dir" \
-        -D "Python3_HOST_EXECUTABLE=$(which python3)"
+    cmake "$build_dir" -D "Python3_HOST_EXECUTABLE=$(which python3)"
     # Avoid expensive copies of large binary modules
     export CMAKE_INSTALL_MODE=SYMLINK_OR_COPY
     # Install the binary modules into the source tree

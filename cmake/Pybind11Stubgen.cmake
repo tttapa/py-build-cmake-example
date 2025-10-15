@@ -29,6 +29,12 @@ function(pybind11_stubgen target)
     set(Python3_ARTIFACTS_PREFIX "_HOST")
     find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
+    if (NOT "${Python3_HOST_VERSION}" STREQUAL "${Python3_VERSION}")
+        message(WARNING "Build and host version of Python are different versions"
+        "(${Python3_HOST_VERSION} vs ${Python3_VERSION}). This could cause"
+        "issues when generating stubs.")
+    endif()
+
     # Run pybind11-stubgen in the installation prefix
     set(STUBGEN_MODULE ${STUBGEN_PACKAGE}.$<TARGET_FILE_BASE_NAME:${target}>)
     set(STUBGEN_CMD "\"${Python3_HOST_EXECUTABLE}\" -m pybind11_stubgen -o . --exit-code \"${STUBGEN_MODULE}\"")

@@ -138,7 +138,7 @@ py -3 examples/add_example.py
 **Linux/macOS**
 ```sh
 # Install py-build-cmake and other build requirements
-python3 -m pip install py-build-cmake~=0.5.1.dev0 pybind11-stubgen~=2.5.5 conan~=2.19.1
+python3 -m pip install py-build-cmake~=0.6.0a2 pybind11-stubgen~=2.5.5 conan~=2.21.0
 ```
 
 With the project open in VSCode, go to the “Debug” panel and start debugging
@@ -149,7 +149,7 @@ session will start.
 **Windows**
 ```sh
 # Install py-build-cmake and other build requirements
-py -3 -m pip install py-build-cmake~=0.5.1.dev0 pybind11-stubgen~=2.5.5 conan~=2.19.1
+py -3 -m pip install py-build-cmake~=0.6.0a2 pybind11-stubgen~=2.5.5 conan~=2.21.0
 ```
 
 With the project open in VSCode, select a debug version of Python
