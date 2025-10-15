@@ -25,7 +25,7 @@ jobs:
 
         env:
           CIBW_PLATFORM: pyodide
-          CIBW_ENVIRONMENT: 'PY_BUILD_CMAKE_VERBOSE=1 _PY_BUILD_CMAKE_PYODIDE_NO_TOOLCHAIN_FILE=1'
+          CIBW_ENVIRONMENT: 'PY_BUILD_CMAKE_VERBOSE=1'
 
       - name: Upload Wheel package
         uses: actions/upload-artifact@v4
