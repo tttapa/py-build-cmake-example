@@ -8,7 +8,7 @@ on:
 env:
   PACKAGE_VERSION: '0.6.0a2.dev0'
   PACKAGE_NAME: py-build-cmake-example
-  MODULE_NAME: py_build_cmake_example
+  IMPORT_MODULE_NAME: py_build_cmake_example.add_module
   BINARY_MODULE_NAME: py_build_cmake_example._add_module
 
 jobs:
@@ -159,7 +159,7 @@ jobs:
         run: python3 -m pip install --find-links=dist "${PACKAGE_NAME}==${PACKAGE_VERSION}"
 
       - name: Import
-        run: objdump -p "$(python3 -c 'import ${{ env.MODULE_NAME }}; print(${{ env.BINARY_MODULE_NAME }}.__file__)')"
+        run: objdump -p "$(python3 -c 'import ${{ env.IMPORT_MODULE_NAME }}; print(${{ env.BINARY_MODULE_NAME }}.__file__)')"
 
   # Build for Windows and macOS using cibuildwheel.
   # Since we're not specifying any cross-compilation settings, py-build-cmake
