@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Conan
         uses: ./.github/workflows/setup-conan
@@ -33,7 +33,7 @@ jobs:
       - name: Build Wheel package
         run: ./scripts/ci/build-linux-native.sh . dist src
       - name: Upload Wheel
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: native-wheels
           path: dist/*.whl
@@ -42,7 +42,7 @@ jobs:
       - name: Create sdist
         run: python3 -m build -s
       - name: Upload sdist
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: sdist
           path: dist/*.tar.gz
@@ -61,10 +61,10 @@ jobs:
     container: python:3.12-bookworm
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: native-wheels
           path: dist
@@ -86,7 +86,7 @@ jobs:
         host: [x86_64-bionic-linux-gnu, aarch64-rpi3-linux-gnu, armv7-neon-linux-gnueabihf, armv6-rpi-linux-gnueabihf]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Conan and sccache
         uses: ./.github/workflows/setup-conan
@@ -95,7 +95,7 @@ jobs:
           cache-key: build-${{ matrix.host }}
 
       - name: Download sdist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: sdist
           path: dist
@@ -109,7 +109,7 @@ jobs:
           done
 
       - name: Upload Wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: wheels-${{ matrix.host }}
           path: ./dist/*.whl
@@ -140,7 +140,7 @@ jobs:
       CIBW_ENABLE: 'pypy'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Conan and sccache
         uses: ./.github/workflows/setup-conan
@@ -149,10 +149,10 @@ jobs:
           cache-key: cibuildwheel-${{ matrix.cibw-arch }}
 
       - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel~=2.22.0
+        run: python -m pip install cibuildwheel~=3.3.0
 
       - name: Download sdist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: sdist
           path: dist
@@ -172,7 +172,7 @@ jobs:
         run: cibuildwheel sdist --output-dir dist
 
       - name: Upload package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: wheels-${{ matrix.os }}-${{ matrix.cibw-arch }}
           path: ./dist/*.whl
@@ -189,8 +189,8 @@ jobs:
     runs-on: ubuntu-latest
     container: python:3.12-bullseye
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v6
         with:
           pattern: wheels-*
           path: dist
@@ -222,16 +222,16 @@ jobs:
     permissions:
       id-token: write  # mandatory for trusted publishing
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           pattern: wheels-*
           path: dist
           merge-multiple: true
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           name: sdist
           path: dist
       - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@15c56dba361d8335944d31a2ecd17d700fc7bcbc
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e
         with:
           repository-url: https://test.pypi.org/legacy/
