@@ -137,7 +137,8 @@ jobs:
     env:
       SCCACHE_CACHE_MULTIARCH: "1"
       CIBW_ARCHS: ${{ matrix.cibw-arch }}
-      CIBW_ENABLE: 'pypy'
+      # CIBW_ENABLE: 'pypy' # https://github.com/pypy/pypy/issues/5328
+      CIBW_SKIP: "cp3??t-*"
     steps:
       - name: Checkout
         uses: actions/checkout@v6
