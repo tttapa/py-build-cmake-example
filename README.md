@@ -86,7 +86,7 @@ the following steps when creating a release:
     Python package matches the version of the GitHub release.
  5. The package is published to test-PyPI using trusted publishing.
 
-![CI pipeline](https://tttapa.github.io/py-build-cmake/images/ci-pipeline.png)
+![CI pipeline](https://github.com/tttapa/py-build-cmake/blob/main/docs/images/ci-pipeline.png?raw=true)
 
 ## Local installation
 
